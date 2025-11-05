@@ -79,7 +79,7 @@ jobs:
             sed -i "s|runner-docker-1|${{env.AWS_ECR}}:mi-runner-de-github-pedro${{env.VERSION_DOCKER}}|g" docker-compose.yml && \
             sed -i "s|ejemplo-organizacion-sms|${{ github.repository }}|g" docker-compose.yml && \
             sed -i "s|XXXXXXXXX|${{ steps.create-token.outputs.runner_token }}|g" docker-compose.yml  && \
-            docker-compose up -d 
+            docker compose up -d 
 
             
       
