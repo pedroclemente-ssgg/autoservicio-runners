@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: runner-docker-1
+    restart: always
+    environment:
+      - REPO=ejemplo-organizacion-sms
+      - REG_TOKEN=XXXXXXXXX
+      - NAME=runner-docker
