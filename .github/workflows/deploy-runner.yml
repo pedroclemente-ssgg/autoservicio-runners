@@ -15,6 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: build de docker sin action
+      #- name: build de docker sin action
+      #  run: |
+      #    docker build -t mi-runner-de-github:${{ env.VERSION_DOCKER }} .
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
+
+      - name: Verify image
         run: |
-          docker build -t mi-runner-de-github:${{ env.VERSION_DOCKER }} .
+            docker images ls
