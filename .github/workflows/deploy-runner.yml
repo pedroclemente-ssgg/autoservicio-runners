@@ -6,6 +6,8 @@ on:
 
 env:
   VERSION_DOCKER: ${{vars.VERSION_DOCKER}}
+  AWS_REGION: ${{vars.AWS_REGION}}
+  AWS_ECR: ${{vars.AWS_ECR}}
 
 jobs:
   build-docker:
@@ -18,21 +20,28 @@ jobs:
       #- name: build de docker sin action
       #  run: |
       #    docker build -t mi-runner-de-github:${{ env.VERSION_DOCKER }} .
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: false
-          tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
-
-      - name: Verify image
-        run: |
-            docker images
+      #    docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
+          tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
+      
+      - name: Verify image
+        run: |
+            docker images
 
       
