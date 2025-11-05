@@ -13,11 +13,19 @@ env:
 jobs:
   build-and-push-docker:
     runs-on: ubuntu-latest
+
     steps:
       
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Detectar cambios en Dockerfile
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            dockerfile:
+              - 'Dockerfile'
       #- name: build de docker sin action
       #  run: |
       #    docker build -t ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }} .
@@ -34,19 +42,19 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      #- name: Build and push
-      #  uses: docker/build-push-action@v6
-      #  with:
-      #    push: true
-      #    #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
-      #    tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
+      - name: Build and push
+        if: steps.filter.outputs.dockerfile == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
+          tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
       
-      #- name: Verify image
-      #  run: |
-      #      docker images
-  create-runner-token-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
+      - name: Verify image
+        if: steps.filter.outputs.dockerfile == 'true'
+        run: |
+            docker images
+
       - name: create registrtion runner token
         run: |
             curl -XPOST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.PERSONAL_GITHUB_TOKEN }}" https://api.github.com/repos/${{env.REPO}}/actions/runners/registration-token > token.txt
