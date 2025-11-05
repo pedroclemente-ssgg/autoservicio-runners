@@ -53,6 +53,16 @@ jobs:
             ## echo "TOKEN=$TOKEN" >> $GITHUB_ENV
             echo "runner_token=$TOKEN" >> $GITHUB_OUTPUT
 
+      - name: Copy artifact to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.ID_RSA }}
+          port: ${{ secrets.PORT }}
+          source: ./docker-compose.yml
+          target: /home/ubuntu/docker-compose.yml
+
       - name: Execute remote SSH commands using SSH key
         uses: appleboy/ssh-action@v1
         with:
