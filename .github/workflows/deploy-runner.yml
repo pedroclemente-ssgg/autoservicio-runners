@@ -56,12 +56,15 @@ jobs:
             docker images
 
       - name: create registrtion runner token
+        id: create_token
         run: |
             curl -XPOST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.PERSONAL_GITHUB_TOKEN }}" https://api.github.com/repos/${{env.REPO}}/actions/runners/registration-token > token.txt
             cat token.txt
             TOKEN=$(jq -r '.token' token.txt)
             ## echo "TOKEN=$TOKEN" >> $GITHUB_ENV
-            echo "runner_token=$TOKEN" >> $GITHUB_OUTPUT
+            ## echo "runner_token=$TOKEN" >> $GITHUB_OUTPUT
+            echo "::add-mask::$TOKEN"               # oculta el token en logs
+            echo "runner_token=$TOKEN" >> "$GITHUB_OUTPUT"
 
       - name: Copy artifact to server
         uses: appleboy/scp-action@v1
@@ -88,7 +91,7 @@ jobs:
             cd /home/ubuntu/${{ github.repository }} && \
             sed -i "s|runner-docker-1|${{env.AWS_ECR}}:mi-runner-de-github-pedro${{env.VERSION_DOCKER}}|g" docker-compose.yml && \
             sed -i "s|ejemplo-organizacion-sms|${{ github.repository }}|g" docker-compose.yml && \
-            sed -i "s|XXXXXXXXX|${{ steps.create-token.outputs.runner_token }}|g" docker-compose.yml  && \
+            sed -i "s|XXXXXXXXX|${{ steps.create_token.outputs.runner_token }}|g" docker-compose.yml  && \
             docker compose up -d 
 
             
