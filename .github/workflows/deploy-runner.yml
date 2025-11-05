@@ -17,4 +17,4 @@ jobs:
 
       - name: build de docker sin action
         run: |
-          docker build -t mi-runner-de-github:${{ env.VERSION_DOCKER }}
+          docker build -t mi-runner-de-github:${{ env.VERSION_DOCKER }} .
