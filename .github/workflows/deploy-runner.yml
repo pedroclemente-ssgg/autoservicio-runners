@@ -8,6 +8,7 @@ env:
   VERSION_DOCKER: ${{vars.VERSION_DOCKER}}
   AWS_REGION: ${{vars.AWS_REGION}}
   AWS_ECR: ${{vars.AWS_ECR}}
+  REPO: ${{vars.REPO}}
 
 jobs:
   build-docker:
@@ -19,8 +20,8 @@ jobs:
 
       #- name: build de docker sin action
       #  run: |
-      #    docker build -t mi-runner-de-github:${{ env.VERSION_DOCKER }} .
-      #    docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+      #    docker build -t ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }} .
+      #    docker push ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5.1.0
@@ -33,15 +34,22 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
-          tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
+      #- name: Build and push
+      #  uses: docker/build-push-action@v6
+      #  with:
+      #    push: true
+      #    #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
+      #    tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
       
-      - name: Verify image
-        run: |
-            docker images
+      #- name: Verify image
+      #  run: |
+      #      docker images
 
+      - name: create registrtion runner token
+        run: |
+            curl -XPOST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.PERSONAL_GITHUB_TOKEN }}" https://api.github.com/repos/${{env.REPO}}/actions/runners/registration-token > token.txt
+            cat token.txt
+            TOKEN=$(jq -r '.token' token.txt)
+            ## echo "TOKEN=$TOKEN" >> $GITHUB_ENV
+            echo "runner_token=$TOKEN" >> $GITHUB_OUTPUT
       
