@@ -34,16 +34,26 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      #- name: Build and push
-      #  uses: docker/build-push-action@v6
-      #  with:
-      #    push: true
-      #    #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
-      #    tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
+      - name: detecta cambio en Dockerfile
+        id: dockerfile_changed
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            dockerfile:
+              - 'Dockerfile'
+
+      - name: Build and push
+        if: steps.dockerfile_changed.outputs.dockerfile == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
+          tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
       
-      #- name: Verify image
-      #  run: |
-      #      docker images
+      - name: Verify image
+        if: steps.dockerfile_changed.outputs.dockerfile == 'true'
+        run: |
+            docker images
 
       - name: create registrtion runner token
         id: create_token
