@@ -3,6 +3,8 @@ name: build and deploy runner github
 on:
   push:
     branches: ["main"]
+  workflow_dispatch: {}
+  repository_dispatch: {}
 
 env:
   VERSION_DOCKER: ${{vars.VERSION_DOCKER}}
