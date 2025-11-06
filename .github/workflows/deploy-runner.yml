@@ -51,7 +51,7 @@ jobs:
         with:
           push: true
           #tags: mi-runner-de-github:${{ env.VERSION_DOCKER }}
-          tags: ${{ env.AWS_ECR}}:mi-runner-de-github-${{ github.run_id }}${{ env.VERSION_DOCKER }}
+          tags: ${{ env.AWS_ECR}}:mi-runner-de-github-pedro${{ env.VERSION_DOCKER }}
       
       - name: Verify image
         if: steps.dockerfile_changed.outputs.dockerfile == 'true'
