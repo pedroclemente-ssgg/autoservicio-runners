@@ -3,6 +3,7 @@ version: '3.8'
 services:
   runner:
     image: runner-docker-1
+    container_name: yyyyyyyyy
     restart: always
     environment:
       - REPO=ejemplo-organizacion-sms
