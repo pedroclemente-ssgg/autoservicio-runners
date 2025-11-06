@@ -45,7 +45,7 @@ jobs:
               - 'Dockerfile'
 
       - name: Build and push
-        if: steps.dockerfile_changed.outputs.dockerfile == 'true'
+        if: ${{ steps.dockerfile_changed.outputs.dockerfile == 'true' && github.event_name != 'repository_dispatch' && github.event_name != 'workflow_dispatch' }}
         uses: docker/build-push-action@v6
         with:
           push: true
