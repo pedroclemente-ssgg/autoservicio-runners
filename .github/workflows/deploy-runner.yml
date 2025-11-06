@@ -74,7 +74,7 @@ jobs:
           key: ${{ secrets.ID_RSA }}
           port: ${{ secrets.PORT }}
           source: ./docker-compose.yml
-          target: /home/ubuntu/${{ github.repository }}
+          target: /home/ubuntu/${{env.REPO}}
 
       - name: Execute remote SSH commands using SSH key
         uses: appleboy/ssh-action@v1
@@ -84,9 +84,9 @@ jobs:
           key: ${{ secrets.ID_RSA }}
           port: ${{ secrets.PORT }}
           script: |
-            cd /home/ubuntu/${{ github.repository }} && \
+            cd /home/ubuntu/${{env.REPO}} && \
             sed -i "s|runner-docker-1|${{env.AWS_ECR}}:mi-runner-de-github-pedro${{env.VERSION_DOCKER}}|g" docker-compose.yml && \
-            sed -i "s|ejemplo-organizacion-sms|${{ github.repository }}|g" docker-compose.yml && \
+            sed -i "s|ejemplo-organizacion-sms|${{env.REPO}}|g" docker-compose.yml && \
             sed -i "s|XXXXXXXXX|${{ steps.create_token.outputs.runner_token }}|g" docker-compose.yml && \
             sed -i "s|runner-docker|runner-docker-automatico-${{ github.run_id }}|g" docker-compose.yml && \
             export AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" && \
