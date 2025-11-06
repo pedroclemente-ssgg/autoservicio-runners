@@ -25,6 +25,8 @@ RUN chown -R docker /home/docker && /home/docker/actions-runner/bin/installdepen
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Switch to docker user
 USER docker
 
